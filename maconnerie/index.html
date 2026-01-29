@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="https://i.ibb.co/bjxqBqBQ/emd.png">
+    <title>EMD Habitat - Maçonnerie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        :root {
+            --brand-orange: #f38230;
+            --brand-blue: #0e4c86;
+            --bg-color: #051628;
+            --bg-gradient: radial-gradient(circle at top, #0e4c86 0%, #051628 70%);
+            --text-color: #ffffff;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --nav-bg: rgba(5, 22, 40, 0.9);
+        }
+
+        body.light-mode {
+            --bg-color: #f4f6f9;
+            --bg-gradient: linear-gradient(135deg, #f4f6f9 0%, #e2e8f0 100%);
+            --text-color: #0e4c86;
+            --glass: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(14, 76, 134, 0.1);
+            --nav-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: background 0.3s ease, color 0.3s ease; }
+
+        body {
+            background: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-gradient); z-index: -2;
+        }
+
+        nav {
+            position: fixed; top: 0; width: 100%; padding: 15px 5%;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000; background: var(--nav-bg); backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .nav-logo { cursor: pointer; }
+        .nav-logo img { height: 60px; object-fit: contain; display: none; }
+        .nav-logo .logo-dark { display: block; }
+        body.light-mode .nav-logo .logo-dark { display: none; }
+        body.light-mode .nav-logo .logo-light { display: block; }
+
+        .nav-links { display: flex; gap: 40px; align-items: center; }
+        .nav-links a {
+            text-decoration: none; color: var(--text-color);
+            font-weight: 600; text-transform: uppercase; font-size: 0.9rem;
+            cursor: pointer; position: relative;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px;
+            background: var(--brand-orange); transition: 0.3s;
+        }
+        .nav-links a:hover::after { width: 100%; }
+
+        .theme-toggle {
+            cursor: pointer; background: none; border: 2px solid var(--glass-border);
+            padding: 8px; border-radius: 50%; color: var(--text-color);
+            display: flex; align-items: center;
+        }
+
+        .page-content {
+            padding-top: 130px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding-bottom: 50px;
+        }
+
+        h1 { font-size: 3.5rem; font-weight: 900; text-transform: uppercase; margin-bottom: 40px; text-align: center; }
+        h1::after { content: ''; display: block; width: 60px; height: 6px; background: var(--brand-orange); margin: 10px auto; border-radius: 3px; }
+
+        .content-block {
+            max-width: 900px;
+            width: 90%;
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .text-area {
+            font-size: 1.15rem;
+            line-height: 1.8;
+            margin-bottom: 40px;
+            text-align: justify;
+        }
+
+        .main-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 1s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .contact-box {
+            background: var(--glass); backdrop-filter: blur(15px);
+            padding: 40px; border-radius: 20px; border: 1px solid var(--glass-border);
+            width: 90%; max-width: 500px; transform-style: preserve-3d;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2); margin-top: 20px; margin-bottom: 50px;
+        }
+        .form-group { margin-bottom: 20px; transform: translateZ(20px); text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.05); color: var(--text-color); font-family: inherit;
+        }
+        .submit-btn {
+            width: 100%; padding: 15px; border: none; border-radius: 8px;
+            background: var(--brand-orange); color: white; font-weight: 700;
+            cursor: pointer; transform: translateZ(30px); transition: 0.3s;
+        }
+        .submit-btn:hover { background: #d96e20; }
+
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center; z-index: 2000;
+        }
+        .modal-content {
+            background: var(--bg-color); padding: 40px; border-radius: 20px;
+            border: 2px solid var(--brand-orange); text-align: center; max-width: 400px; width: 90%;
+        }
+        .close-modal {
+            margin-top: 20px; padding: 10px 30px; background: var(--brand-orange);
+            color: white; border: none; border-radius: 5px; cursor: pointer;
+        }
+
+        .burger { display: none; cursor: pointer; flex-direction: column; gap: 5px; z-index: 1001; }
+        .burger div { width: 25px; height: 3px; background: var(--text-color); border-radius: 2px; }
+
+        @media (max-width: 900px) {
+            .nav-links {
+                position: absolute; top: 80px; right: -100%; background: var(--nav-bg);
+                backdrop-filter: blur(15px); flex-direction: column; width: 70%; height: 50vh;
+                justify-content: center; border-bottom-left-radius: 20px; transition: 0.4s ease-in-out;
+            }
+            .nav-links.nav-active { right: 0; }
+            .burger { display: flex; }
+            h1 { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-logo" onclick="window.location.href='https://dnb95.github.io/emd/'">
+            <img class="logo-dark" src="https://i.ibb.co/N66ytp95/logo-large-emd.png" alt="Logo Sombre">
+            <img class="logo-light" src="https://i.ibb.co/1Y2YR0CH/logo-large-emd.png" alt="Logo Clair">
+        </div>
+        <div class="nav-links" id="nav-links">
+            <a href="https://dnb95.github.io/emd/">Accueil</a>
+            <a href="https://dnb95.github.io/emd/#about">À propos</a>
+            <a href="https://dnb95.github.io/emd/#contact">Contact</a>
+            <button class="theme-toggle" id="theme-btn">
+                <svg id="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                <svg id="sun-icon" style="display:none;" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            </button>
+        </div>
+        <div class="burger" id="burger">
+            <div class="line1"></div><div class="line2"></div><div class="line3"></div>
+        </div>
+    </nav>
+
+    <div class="page-content">
+        <h1 class="reveal">Maçonnerie</h1>
+
+        <div class="content-block reveal">
+            <p class="text-area">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+        </div>
+
+        <div class="content-block reveal">
+            <img class="main-image" src="https://www.lecoindesentrepreneurs.fr/wp-content/uploads/2021/02/creer-une-entreprise-de-maconnerie.png" alt="Travaux de maçonnerie">
+        </div>
+
+        <h2 class="reveal" style="margin-bottom: 20px; text-transform: uppercase;">Un projet ?</h2>
+        <div class="contact-box reveal" id="tilt-box">
+            <form id="contact-form">
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" name="user_email" required placeholder="votre@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Objet</label>
+                    <input name="tittle" type="text" value="Demande depuis page Maçonnerie" required>
+                </div>
+                <div class="form-group">
+                    <label>Détails</label>
+                    <textarea name="message" rows="5" required placeholder="Votre projet de maçonnerie..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn" id="send-btn">Envoyer</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-success">
+        <div class="modal-content">
+            <h2 style="color: var(--brand-orange); margin-bottom: 10px;">Envoyé !</h2>
+            <p>Votre message a bien été transmis. Nous reviendrons vers vous rapidement.</p>
+            <button class="close-modal" onclick="closeModal()">Fermer</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            emailjs.init("2VkygefcXxbSOlhFX"); 
+        })();
+
+        const burger = document.getElementById('burger');
+        const navLinks = document.getElementById('nav-links');
+        burger.addEventListener('click', () => {
+            navLinks.classList.toggle('nav-active');
+            burger.classList.toggle('toggle');
+        });
+
+        const themeBtn = document.getElementById('theme-btn');
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const isLight = document.body.classList.contains('light-mode');
+            document.getElementById('moon-icon').style.display = isLight ? 'none' : 'block';
+            document.getElementById('sun-icon').style.display = isLight ? 'block' : 'none';
+        });
+
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        reveal();
+
+        const contactForm = document.getElementById('contact-form');
+        const modal = document.getElementById('modal-success');
+
+        contactForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const btn = document.getElementById('send-btn');
+            btn.innerText = 'Envoi...';
+
+            emailjs.sendForm('service_eej49yl', 'template_wjp7iv9', this)
+                .then(() => {
+                    modal.style.display = 'flex';
+                    btn.innerText = 'Envoyer';
+                    contactForm.reset();
+                }, (err) => {
+                    console.error('ERREUR:', err);
+                    alert('Erreur d\'envoi. Code : ' + err.status);
+                    btn.innerText = 'Envoyer';
+                });
+        });
+
+        function closeModal() { modal.style.display = 'none'; }
+
+        function applyTilt(elements) {
+            elements.forEach(el => {
+                el.addEventListener('mousemove', (e) => {
+                    const rect = el.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const rotateX = ((y - (rect.height/2)) / (rect.height/2)) * -10;
+                    const rotateY = ((x - (rect.width/2)) / (rect.width/2)) * 10;
+                    el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+                });
+                el.addEventListener('mouseleave', () => {
+                    el.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`;
+                });
+            });
+        }
+        applyTilt(document.querySelectorAll('.contact-box'));
+    </script>
+</body>
+</html>
